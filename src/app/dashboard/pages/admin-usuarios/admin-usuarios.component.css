@@ -1,0 +1,104 @@
+/* --- Dialog Customization --- */
+:host ::ng-deep .p-dialog {
+	border-radius: 20px !important;
+	overflow: hidden;
+	box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
+}
+
+:host ::ng-deep .p-dialog-header {
+	padding: 1.5rem 1.5rem 0 1.5rem !important;
+	background: #ffffff !important;
+}
+
+:host ::ng-deep .p-dialog-title {
+	font-weight: 800 !important;
+	color: #1e293b !important;
+	font-size: 1.5rem !important;
+}
+
+:host ::ng-deep .p-dialog-content {
+	padding: 1.5rem !important;
+	background: #ffffff !important;
+}
+
+:host ::ng-deep .p-dialog-footer {
+	padding: 0.5rem 1.5rem 1.5rem 1.5rem !important;
+	background: #ffffff !important;
+	border: none !important;
+}
+
+/* --- Input Polishing --- */
+.premium-input {
+	border-radius: 10px !important;
+	border: 1.5px solid #e2e8f0 !important;
+	padding: 0.75rem 1rem !important;
+	transition: all 0.2s ease !important;
+	font-size: 0.95rem !important;
+}
+
+.premium-input:focus {
+	border-color: #10b981 !important; /* Emerald 500 */
+	box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+	outline: none !important;
+}
+
+.label-premium {
+	color: #334155;
+	font-weight: 700;
+	font-size: 0.9rem;
+	margin-bottom: 0.5rem;
+	display: block;
+}
+
+/* --- SelectButton / Role Selection --- */
+:host ::ng-deep .p-selectbutton .p-button {
+	background: #f8fafc !important;
+	border: 1.5px solid #e2e8f0 !important;
+	color: #64748b !important;
+	transition: all 0.2s ease !important;
+	padding: 0.75rem 1rem !important;
+	font-weight: 600 !important;
+}
+
+:host ::ng-deep .p-selectbutton .p-button:first-child {
+	border-radius: 12px 0 0 12px !important;
+}
+
+:host ::ng-deep .p-selectbutton .p-button:last-child {
+	border-radius: 0 12px 12px 0 !important;
+}
+
+:host ::ng-deep .p-selectbutton .p-button.p-highlight {
+	background: #ecfdf5 !important; /* Emerald 50 */
+	border-color: #10b981 !important; /* Emerald 500 */
+	color: #059669 !important; /* Emerald 600 */
+}
+
+:host ::ng-deep .p-selectbutton .p-button.p-highlight::before {
+	display: none !important;
+}
+
+/* --- Action Buttons --- */
+.btn-premium-save {
+	background: transparent !important;
+	color: #059669 !important;
+	border: none !important;
+	font-weight: 700 !important;
+	transition: transform 0.2s ease !important;
+}
+
+.btn-premium-save:hover {
+	transform: scale(1.05);
+	background: #f0fdf4 !important;
+}
+
+.btn-premium-cancel {
+	background: transparent !important;
+	color: #059669 !important;
+	border: none !important;
+	font-weight: 600 !important;
+}
+
+.btn-premium-cancel:hover {
+	background: #f8fafc !important;
+}

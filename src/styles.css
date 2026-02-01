@@ -56,11 +56,11 @@
    ======================================== */
 
 .p-toast {
-  top: 1rem !important;
-  right: 1rem !important;
+  top: 1.5rem !important;
+  right: 1.5rem !important;
   width: auto !important;
   max-width: 90vw;
-  z-index: 9999;
+  z-index: 10000 !important;
 }
 
 .p-toast-message {

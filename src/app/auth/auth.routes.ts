@@ -11,9 +11,20 @@ export default [
 				loadComponent: () => import('./pages/login/login.component'),
 			},
 			{
+				path: 'register-client',
+				title: 'Registro Cliente',
+				loadComponent: () => import('./pages/register-client/register-client.component'),
+			},
+			{
+				path: 'register-driver',
+				title: 'Registro Taxista',
+				loadComponent: () => import('./pages/register-driver/register-driver.component'),
+			},
+			{
 				path: 'register',
 				title: 'Registro de usuario',
-				loadComponent: () => import('./pages/register/register.component'),
+				redirectTo: 'register-client', // Default o Legacy
+				pathMatch: 'full',
 			},
 			{
 				path: 'forgot-password',

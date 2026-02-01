@@ -1,0 +1,85 @@
+<div class="min-h-screen flex items-center justify-center p-4">
+	<div
+		class="w-full max-w-md bg-white/90 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-gray-100 animate-fade-in"
+	>
+		<div class="text-center mb-6">
+			<h2 class="text-2xl font-bold text-gray-800">Registro de Cliente</h2>
+			<p class="text-gray-500 text-sm">Crea tu cuenta para solicitar viajes</p>
+		</div>
+
+		<form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+			<div class="grid grid-cols-2 gap-3">
+				<div class="flex flex-col gap-1">
+					<label class="text-xs font-semibold text-gray-600">Nombres</label>
+					<input pInputText formControlName="nombres" placeholder="Ej: Juan" class="w-full text-sm" />
+				</div>
+				<div class="flex flex-col gap-1">
+					<label class="text-xs font-semibold text-gray-600">Apellidos</label>
+					<input pInputText formControlName="apellidos" placeholder="Ej: Pérez" class="w-full text-sm" />
+				</div>
+			</div>
+
+			<div class="flex flex-col gap-1">
+				<label class="text-xs font-semibold text-gray-600">Identificación (Cédula)</label>
+				<input pInputText formControlName="identificacion" placeholder="10 dígitos" class="w-full text-sm" />
+				<small
+					*ngIf="registerForm.get('identificacion')?.invalid && registerForm.get('identificacion')?.touched"
+					class="text-red-500 text-xs"
+				>
+					Cédula inválida
+				</small>
+			</div>
+
+			<div class="flex flex-col gap-1">
+				<label class="text-xs font-semibold text-gray-600">Correo Electrónico</label>
+				<input pInputText formControlName="email" type="email" placeholder="juan@ejemplo.com" class="w-full text-sm" />
+			</div>
+
+			<div class="flex flex-col gap-1">
+				<label class="text-xs font-semibold text-gray-600">Contraseña</label>
+				<p-password
+					formControlName="password"
+					[toggleMask]="true"
+					styleClass="w-full"
+					inputStyleClass="w-full text-sm"
+					placeholder="******"
+				></p-password>
+			</div>
+
+			<div class="flex flex-col gap-1">
+				<label class="text-xs font-semibold text-gray-600">Confirmar Contraseña</label>
+				<p-password
+					formControlName="confirmPassword"
+					[toggleMask]="true"
+					[feedback]="false"
+					styleClass="w-full"
+					inputStyleClass="w-full text-sm"
+					placeholder="******"
+				></p-password>
+				<small
+					*ngIf="registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched"
+					class="text-red-500 text-xs"
+				>
+					Las contraseñas no coinciden
+				</small>
+			</div>
+
+			<p-divider></p-divider>
+
+			<button
+				pButton
+				type="submit"
+				[loading]="isLoading"
+				label="Registrarse"
+				class="w-full p-button-success cursor-pointer"
+			></button>
+
+			<div class="text-center mt-2">
+				<a routerLink="/auth/login" class="text-xs text-blue-600 hover:underline cursor-pointer"
+					>¿Ya tienes cuenta? Inicia sesión</a
+				>
+			</div>
+		</form>
+	</div>
+	<p-toast></p-toast>
+</div>

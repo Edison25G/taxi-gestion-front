@@ -1,33 +1,39 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
-import { Observable, throwError, map, catchError, tap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject, signal } from '@angular/core';
+import { Observable, throwError, map, catchError, tap, of, delay } from 'rxjs';
 import { environment } from './../../environments/environment.development';
 import { ErrorService } from '../../auth/core/services/error.service';
 import { LoginRequest, UserData } from '../../core/interfaces/auth.interface';
+import { UserRepository } from '../domain/repositories/user.repository';
+import { RolUsuario } from '../models/role.enum';
 
 @Injectable({
 	providedIn: 'root',
 })
-export class AuthService {
-	private currentUser: UserData | null = null;
+export class AuthService implements UserRepository {
+	public usuario = signal<UserData | null>(null);
 	private http = inject(HttpClient);
 	private errorService = inject(ErrorService);
 
 	constructor() {
 		const userJson = localStorage.getItem('user');
 		if (userJson) {
-			this.currentUser = JSON.parse(userJson);
+			this.usuario.set(JSON.parse(userJson));
 		}
 	}
 
 	// --- MÉTODOS DE ESTADO ---
+	getCurrentUser(): UserData | null {
+		return this.usuario();
+	}
+
 	isAuthenticated(): boolean {
 		return !!localStorage.getItem('token');
 	}
 
 	getRole(): string | null {
-		if (this.currentUser && this.currentUser.rol) {
-			return this.currentUser.rol;
+		if (this.usuario() && this.usuario()?.rol) {
+			return this.usuario()?.rol || null;
 		}
 		return null;
 	}
@@ -35,15 +41,16 @@ export class AuthService {
 	// ✅ VITAL: Este método une lo que el Backend nos envió
 	// El MedidorService usa esto para filtrar la lista.
 	getNombreCompleto(): string {
-		if (this.currentUser) {
-			const nombre = `${this.currentUser.first_name} ${this.currentUser.last_name}`;
+		const user = this.usuario();
+		if (user) {
+			const nombre = `${user.first_name} ${user.last_name}`;
 			return nombre.trim();
 		}
 		return '';
 	}
 
 	logout(): void {
-		this.currentUser = null;
+		this.usuario.set(null);
 		localStorage.removeItem('user');
 		localStorage.removeItem('token');
 	}
@@ -71,47 +78,47 @@ export class AuthService {
 
 	// --- LOGIN ---
 	login(credentials: LoginRequest): Observable<UserData> {
-		const loginUrl = `${environment.apiUrl}/token/`;
+		// --- MOCK LOGIN PARA DESARROLLO/DEFENSA ---
+		console.warn('⚠️ USANDO MOCK LOGIN - NO CONECTADO AL BACKEND');
 
-		return this.http.post<any>(loginUrl, credentials).pipe(
-			map((response) => {
-				// 1. Guardamos el Token crudo
-				if (response.access) {
-					localStorage.setItem('token', response.access);
-				}
+		const username = credentials.username.toLowerCase();
+		let role = RolUsuario.CLIENTE;
+		let nombre = 'Usuario Visitante';
 
-				// 2. Leemos qué tiene adentro el token
-				const payload = this.decodeToken(response.access);
+		// 1. LÓGICA DE ROLES
+		if (username.includes('admin')) {
+			role = RolUsuario.ADMIN;
+			nombre = 'Administrador Sistema';
+		} else if (username.includes('conductor') || username.includes('chofer')) {
+			role = RolUsuario.CONDUCTOR;
+			nombre = 'Juan Pérez (Chofer)';
+		} else {
+			role = RolUsuario.CLIENTE;
+			nombre = 'Maria López (Cliente)';
+		}
 
-				// 3. Obtenemos el Rol (con fallback por si acaso)
-				const rolDelToken = payload.rol || payload.role || payload.tipo_usuario || 'SOCIO';
+		const mockUser: UserData = {
+			id: 1,
+			username: credentials.username,
+			first_name: nombre, // Mantener para compatibilidad
+			last_name: '',
+			nombres: nombre,
+			apellidos: '',
+			email: `${username}@taxi.com`,
+			rol: role,
+			esta_activo: true,
+		};
 
-				// 4. CREAMOS EL USUARIO CON DATOS REALES DEL BACKEND
-				// Ya no hay "if/else" manuales. Confiamos en que Django envía la data.
-				this.currentUser = {
-					id: payload.user_id || 0,
-					username: payload.username || credentials.username,
-
-					// ✅ AQUÍ LA MAGIA: Django ahora envía estos campos llenos
-					first_name: payload.first_name || '',
-					last_name: payload.last_name || '',
-
-					email: payload.email || '',
-					rol: rolDelToken,
-				};
-
-				localStorage.setItem('user', JSON.stringify(this.currentUser));
-				return this.currentUser as UserData;
+		return of(mockUser).pipe(
+			delay(800), // Simular delay de red
+			map((user) => {
+				// Guardamos token ficticio y usuario
+				localStorage.setItem('token', 'mock-jwt-token-defense-mode');
+				localStorage.setItem('user', JSON.stringify(user));
+				this.usuario.set(user);
+				return user;
 			}),
-
 			tap(() => this.errorService.loginSuccess()),
-
-			catchError((error: HttpErrorResponse) => {
-				let errorMessage = 'Error de conexión.';
-				if (error.status === 401) errorMessage = 'Credenciales inválidas.';
-				this.errorService.loginError(errorMessage);
-				return throwError(() => new Error(errorMessage));
-			}),
 		);
 	}
 }

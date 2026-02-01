@@ -27,10 +27,13 @@ export interface LoginRequest {
 export interface UserData {
 	id: number;
 	username: string;
-	first_name: string;
-	last_name: string;
+	first_name?: string; // Optional legacy
+	last_name?: string; // Optional legacy
+	nombres?: string; // New field
+	apellidos?: string; // New field
 	email: string;
 	rol?: string;
+	esta_activo?: boolean; // New field
 }
 
 // ⬅️ ¡AÑADE ESTA INTERFAZ!

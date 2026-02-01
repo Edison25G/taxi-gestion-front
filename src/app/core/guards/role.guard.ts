@@ -8,9 +8,8 @@ function normalizeRole(roleString: string | null): RolUsuario | null {
 	if (!roleString) return null;
 	const role = roleString.toUpperCase();
 	if (role === 'ADMINISTRADOR' || role === 'ADMIN') return RolUsuario.ADMIN;
-	if (role === 'TESORERO') return RolUsuario.TESORERO;
-	if (role === 'OPERADOR') return RolUsuario.OPERADOR;
-	if (role === 'SOCIO') return RolUsuario.SOCIO;
+	if (role === 'CLIENTE') return RolUsuario.CLIENTE;
+	if (role === 'CONDUCTOR') return RolUsuario.CONDUCTOR;
 	return null;
 }
 

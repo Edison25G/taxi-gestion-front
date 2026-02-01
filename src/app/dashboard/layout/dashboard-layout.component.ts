@@ -38,111 +38,31 @@ export class DashboardLayoutComponent implements OnInit {
 
 	public roleEnum = RolUsuario;
 
-	// ✅ MENÚ HÍBRIDO CONFIGURADO
+	// ✅ MENÚ TAXI (Limpieza estricta)
 	menuItems: SideNavItem[] = [
-		// 1. DASHBOARD GENERAL (Para todos)
 		{
-			label: 'Resumen',
+			label: 'Inicio',
 			icon: 'pi pi-home',
 			link: '/dashboard/home',
-			roles: [RolUsuario.ADMIN, RolUsuario.TESORERO, RolUsuario.OPERADOR, RolUsuario.SOCIO],
+			roles: [RolUsuario.ADMIN, RolUsuario.CLIENTE, RolUsuario.CONDUCTOR],
 		},
-
-		// 2. SECCIÓN DE TRABAJO (Solo Roles Administrativos)
-		// -----------------------------------------------------
-		// {
-		// 	header: 'GESTIÓN ADMINISTRATIVA', // Título visual
-		// 	label: 'Gestión de Usuarios',
-		// 	icon: 'pi pi-shield',
-		// 	link: '/dashboard/usuarios',
-		// 	roles: [RolUsuario.ADMIN],
-		// },
 		{
-			header: 'GESTIÓN ADMINISTRATIVA',
-			label: 'Gestión de Socios',
+			label: 'Pedir Taxi',
+			icon: 'pi pi-car',
+			link: '/dashboard/pedir-taxi',
+			roles: [RolUsuario.CLIENTE, RolUsuario.ADMIN],
+		},
+		{
+			label: 'Historial de Viajes',
+			icon: 'pi pi-map-marker',
+			link: '/dashboard/viajes',
+			roles: [RolUsuario.ADMIN, RolUsuario.CLIENTE, RolUsuario.CONDUCTOR],
+		},
+		{
+			label: 'Usuarios (Admin)',
 			icon: 'pi pi-users',
-			link: '/dashboard/socios',
+			link: '/dashboard/usuarios',
 			roles: [RolUsuario.ADMIN],
-		},
-		{
-			label: 'Caja / Recaudación',
-			icon: 'pi pi-wallet',
-			link: '/dashboard/caja',
-			roles: [RolUsuario.TESORERO, RolUsuario.ADMIN],
-		},
-		{
-			label: 'Generar Planilla',
-			icon: 'pi pi-file-edit',
-			link: '/dashboard/facturacion',
-			roles: [RolUsuario.TESORERO, RolUsuario.ADMIN],
-		},
-
-		{
-			label: 'Gestión SRI',
-			icon: 'pi pi-cloud-upload',
-			link: '/dashboard/gestion-sri', // <--- Cambiado para que coincida con la ruta
-			roles: [RolUsuario.TESORERO, RolUsuario.ADMIN],
-		},
-
-		{
-			label: 'Registro de Lecturas',
-			icon: 'pi pi-camera',
-			link: '/dashboard/lecturas',
-			roles: [RolUsuario.OPERADOR, RolUsuario.ADMIN],
-		},
-		{
-			label: 'Gestión de Medidores',
-			icon: 'pi pi-gauge',
-			link: '/dashboard/medidores',
-			roles: [RolUsuario.ADMIN, RolUsuario.OPERADOR],
-		},
-		{
-			label: 'Barrios / Zonas',
-			icon: 'pi pi-map',
-			link: '/dashboard/barrios',
-			roles: [RolUsuario.ADMIN, RolUsuario.TESORERO, RolUsuario.OPERADOR],
-		},
-		{
-			label: 'Gestión de Eventos',
-			icon: 'pi pi-calendar',
-			link: '/dashboard/mingas',
-			roles: [RolUsuario.ADMIN, RolUsuario.TESORERO],
-		},
-		{
-			label: 'Gestión de Multas',
-			icon: 'pi pi-exclamation-circle',
-			link: '/dashboard/multas',
-			roles: [RolUsuario.ADMIN], // Solo Admin puede impugnar
-		},
-		{
-			label: 'Reportes',
-			icon: 'pi pi-chart-bar',
-			link: '/dashboard/reportes',
-			roles: [RolUsuario.ADMIN, RolUsuario.TESORERO],
-		},
-		{
-			label: 'Configuración',
-			icon: 'pi pi-cog',
-			link: '/dashboard/configuracion',
-			roles: [RolUsuario.ADMIN],
-		},
-
-		// 3. SECCIÓN PERSONAL (Para TODOS, incluido el Tesorero en su rol de vecino)
-		// --------------------------------------------------------------------------
-		{
-			header: 'MI SERVICIO (PERSONAL)', // Título visual
-			label: 'Mis Pagos',
-			icon: 'pi pi-dollar',
-			link: '/dashboard/pagos',
-			// ✅ CLAVE: Agregamos ADMIN, TESORERO y OPERADOR aquí
-			roles: [RolUsuario.SOCIO, RolUsuario.TESORERO, RolUsuario.OPERADOR],
-		},
-		{
-			label: 'Mi Medidor',
-			icon: 'pi pi-chart-line',
-			link: '/dashboard/medidor',
-			// ✅ CLAVE: Agregamos ADMIN, TESORERO y OPERADOR aquí
-			roles: [RolUsuario.SOCIO, RolUsuario.TESORERO, RolUsuario.OPERADOR],
 		},
 	];
 
@@ -156,12 +76,10 @@ export class DashboardLayoutComponent implements OnInit {
 			// Mapear el rol del backend al enum
 			if (roleUpper === 'ADMINISTRADOR' || roleUpper === 'ADMIN') {
 				this.currentRole = RolUsuario.ADMIN;
-			} else if (roleUpper === 'TESORERO') {
-				this.currentRole = RolUsuario.TESORERO;
-			} else if (roleUpper === 'OPERADOR') {
-				this.currentRole = RolUsuario.OPERADOR;
-			} else if (roleUpper === 'SOCIO') {
-				this.currentRole = RolUsuario.SOCIO;
+			} else if (roleUpper === 'CLIENTE') {
+				this.currentRole = RolUsuario.CLIENTE;
+			} else if (roleUpper === 'CONDUCTOR') {
+				this.currentRole = RolUsuario.CONDUCTOR;
 			} else {
 				this.currentRole = null;
 			}

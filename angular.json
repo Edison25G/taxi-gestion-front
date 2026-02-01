@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "cobros-arbolito": {
+    "taxi-gestion-front": {
       "projectType": "application",
       "schematics": {
 
@@ -63,10 +63,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "cobros-arbolito:build:production"
+              "buildTarget": "taxi-gestion-front:build:production"
             },
             "development": {
-              "buildTarget": "cobros-arbolito:build:development"
+              "buildTarget": "taxi-gestion-front:build:development"
             }
           },
           "defaultConfiguration": "development"

@@ -1,13 +1,15 @@
 import { RolUsuario } from './role.enum';
 
-// Define la estructura de un objeto Usuario (del sistema)
 export interface Usuario {
-	id?: number;
-	username: string;
-	email: string;
-	first_name: string;
-	last_name: string;
-	password?: string; // Solo para crear
-	rol: RolUsuario; // Para saber si es Tesorero u Operador
-	is_active?: boolean;
+	id: number;
+	tipo_identificacion: 'C' | 'R' | 'P'; // C: Cédula, R: RUC, P: Pasaporte
+	identificacion: string;
+	nombres: string;
+	apellidos: string;
+	email: string | null;
+	telefono?: string;
+	direccion: string;
+	rol: RolUsuario | string; // Puede venir como Enum o como texto del backend
+	esta_activo: boolean;
+	usuario_id?: number; // ID del usuario asociado (opcional)
 }

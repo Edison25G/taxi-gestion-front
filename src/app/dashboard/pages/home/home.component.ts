@@ -12,15 +12,15 @@ import { MessageService } from 'primeng/api'; // ✅ Para notificaciones de erro
 
 // Servicios y Modelos
 import { AuthService } from '../../../core/services/auth.service';
-import { SocioService } from '../../../core/services/socio.service';
+import { UsuarioService } from '../../../core/services/usuario.service';
 import { RolUsuario } from '../../../core/models/role.enum';
 
 // Interfaz local para los datos del reporte (Mejor que usar 'any')
 interface DashboardStats {
-	sociosActivos: number;
-	sociosEnMora: number;
-	totalRecaudadoMes: number;
-	totalDeuda: number;
+	viajesRealizados: number;
+	conductoresActivos: number;
+	gananciasDia: number;
+	calificacion: number;
 }
 
 @Component({
@@ -33,8 +33,8 @@ interface DashboardStats {
 })
 export class HomeComponent implements OnInit {
 	// Inyecciones
-	private authService = inject(AuthService);
-	private socioService = inject(SocioService);
+	public authService = inject(AuthService);
+	private usuarioService = inject(UsuarioService);
 	private messageService = inject(MessageService);
 
 	// Estado del Usuario
@@ -47,10 +47,10 @@ export class HomeComponent implements OnInit {
 
 	// Datos del reporte inicializados en 0
 	reporteData: DashboardStats = {
-		sociosActivos: 0,
-		sociosEnMora: 0, // Placeholder
-		totalRecaudadoMes: 0, // Placeholder
-		totalDeuda: 0, // Placeholder
+		viajesRealizados: 124,
+		conductoresActivos: 15,
+		gananciasDia: 450.0,
+		calificacion: 4.8,
 	};
 
 	// Configuración del Gráfico
@@ -64,12 +64,10 @@ export class HomeComponent implements OnInit {
 			const roleUpper = roleString.toUpperCase();
 			if (roleUpper === 'ADMINISTRADOR' || roleUpper === 'ADMIN') {
 				this.userRole = RolUsuario.ADMIN;
-			} else if (roleUpper === 'TESORERO') {
-				this.userRole = RolUsuario.TESORERO;
-			} else if (roleUpper === 'OPERADOR') {
-				this.userRole = RolUsuario.OPERADOR;
-			} else if (roleUpper === 'SOCIO') {
-				this.userRole = RolUsuario.SOCIO;
+			} else if (roleUpper === 'CLIENTE') {
+				this.userRole = RolUsuario.CLIENTE;
+			} else if (roleUpper === 'CONDUCTOR') {
+				this.userRole = RolUsuario.CONDUCTOR;
 			} else {
 				this.userRole = null;
 			}
@@ -85,16 +83,16 @@ export class HomeComponent implements OnInit {
 	loadDashboardData() {
 		this.isLoading = true;
 
-		// 🔒 SEGURIDAD: Prevenimos el error 403 Forbidden.
-		// Si es Operador, NO llamamos a getSocios().
-		if (this.userRole === RolUsuario.OPERADOR) {
+		// Si no es ADMIN, no cargamos estadísticas globales (por ahora)
+		if (this.userRole !== RolUsuario.ADMIN) {
 			this.isLoading = false;
-			return; // Salimos de la función aquí
+			// Aquí podrías cargar datos específicos de Cliente/Conductor
+			return;
 		}
 
-		// Si es Admin o Tesorero, procedemos con la carga
-		this.socioService
-			.getSocios()
+		// Si es ADMIN, procedemos con la carga global
+		this.usuarioService
+			.getUsuarios()
 			.pipe(
 				// ✅ finalize se ejecuta SIEMPRE (éxito o error)
 				finalize(() => {
@@ -109,10 +107,9 @@ export class HomeComponent implements OnInit {
 						this.isEmpty = true;
 					} else {
 						this.isEmpty = false;
-						// Actualizamos solo los datos reales
-						this.reporteData.sociosActivos = totalSocios;
-
-						// Aquí irán las futuras llamadas a CobrosService para llenar el resto
+						// Actualizamos solo los datos reales (simulados por ahora para demo visual)
+						this.reporteData.viajesRealizados = 124;
+						this.reporteData.conductoresActivos = totalSocios > 0 ? 15 : 0; // Mock logic based on users
 					}
 				},
 				error: (err) => {
@@ -132,12 +129,12 @@ export class HomeComponent implements OnInit {
 		const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
 		this.barChartData = {
-			labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+			labels: ['Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene'],
 			datasets: [
 				{
-					label: 'Recaudación ($)',
-					data: [0, 0, 0, 0, 0, 0], // Datos simulados
-					backgroundColor: '#10b981', // Tailwind Emerald-500
+					label: 'Solicitudes',
+					data: [65, 59, 80, 81, 56, 124],
+					backgroundColor: '#f59e0b', // Tailwind Amber-500
 					borderRadius: 6,
 				},
 			],

@@ -13,7 +13,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { filter } from 'rxjs/operators'; // <-- 4. IMPORTAR filter de RxJS
 
 // --- Tus Imports ---
-import { LoadingOverlayComponent } from './common/components/loading-overlay/loading-overlay.component';
 import { LoadingService } from './core/services/loading.service'; // <-- 5. IMPORTAR LoadingService
 
 @Component({
@@ -25,7 +24,6 @@ import { LoadingService } from './core/services/loading.service'; // <-- 5. IMPO
 		ButtonModule,
 		ToastModule,
 		ConfirmDialogModule,
-		LoadingOverlayComponent,
 	],
 	providers: [],
 	templateUrl: './app.component.html',
