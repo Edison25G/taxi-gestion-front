@@ -1,0 +1,90 @@
+<div
+	class="relative min-h-screen bg-[#0f172a] text-slate-200 font-sans selection:bg-amber-500 selection:text-black overflow-x-hidden scroll-smooth flex flex-col"
+>
+	<div
+		class="fixed top-[-10%] left-[-10%] w-[20rem] md:w-[40rem] h-[20rem] md:h-[40rem] bg-amber-600/20 rounded-full blur-[80px] md:blur-[120px] pointer-events-none z-0"
+	></div>
+	<div
+		class="fixed top-[20%] right-[-5%] w-[15rem] md:w-[30rem] h-[15rem] md:h-[30rem] bg-yellow-500/10 rounded-full blur-[60px] md:blur-[100px] pointer-events-none z-0"
+	></div>
+
+	<nav
+		class="fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-[#0f172a]/80 border-b border-white/5 transition-all duration-300"
+	>
+		<div class="container mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
+			<button
+				(click)="scrollToSection('inicio')"
+				class="flex items-center gap-3 cursor-pointer group focus:outline-none"
+			>
+				<div
+					class="p-2 rounded-lg bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-900 shadow-[0_0_15px_rgba(245,158,11,0.5)]"
+				>
+					<i class="pi pi-car text-2xl font-bold"></i>
+				</div>
+				<span class="text-xl font-bold text-white tracking-wider">TAXI<span class="text-amber-400">GESTIÓN</span></span>
+			</button>
+
+			<a
+				routerLink="/auth/login"
+				class="group relative inline-flex items-center justify-center px-6 py-2 text-sm font-bold text-slate-900 bg-amber-400 rounded-full shadow-lg hover:bg-amber-300 transition-all duration-200 cursor-pointer"
+			>
+				<span class="relative z-10">Ingresar al Sistema</span>
+				<i class="pi pi-arrow-right ml-2 relative z-10"></i>
+			</a>
+		</div>
+	</nav>
+
+	<section
+		id="inicio"
+		class="relative z-10 pt-32 pb-20 px-4 flex flex-col items-center text-center justify-center min-h-[80vh]"
+	>
+		<div
+			class="inline-block mb-6 px-4 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-semibold tracking-wide animate-fade-in"
+		>
+			TU TRANSPORTE SEGURO 24/7
+		</div>
+
+		<h1 class="text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-tight mb-6 drop-shadow-2xl">
+			VIAJA SIN <br />
+			<span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500">
+				LÍMITES
+			</span>
+		</h1>
+
+		<p class="text-slate-400 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed mb-10">
+			La plataforma de gestión de taxis más avanzada de la ciudad. Conectamos pasajeros con conductores profesionales en
+			segundos.
+		</p>
+
+		<div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+			<a
+				routerLink="/auth/login"
+				class="w-full sm:w-auto px-10 py-4 rounded-full bg-amber-500 text-slate-900 font-bold hover:bg-amber-400 transition-all shadow-[0_0_30px_rgba(245,158,11,0.3)] text-lg"
+			>
+				Pedir un Taxi Ahora
+			</a>
+		</div>
+	</section>
+
+	<section id="servicios" class="relative z-10 py-16 px-4 bg-white/5 backdrop-blur-sm border-y border-white/5">
+		<div class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+			<div class="p-8 rounded-2xl bg-[#0f172a] border border-white/10 hover:border-amber-500/50 transition-all group">
+				<i class="pi pi-shield text-4xl text-amber-500 mb-4 group-hover:scale-110 transition-transform block"></i>
+				<h3 class="text-xl font-bold text-white mb-2">Seguridad Total</h3>
+				<p class="text-slate-400">Conductores verificados y monitoreo en tiempo real de cada viaje.</p>
+			</div>
+			<div class="p-8 rounded-2xl bg-[#0f172a] border border-white/10 hover:border-amber-500/50 transition-all group">
+				<i class="pi pi-clock text-4xl text-amber-500 mb-4 group-hover:scale-110 transition-transform block"></i>
+				<h3 class="text-xl font-bold text-white mb-2">Rapidez</h3>
+				<p class="text-slate-400">Algoritmos inteligentes para asignarte el taxi más cercano en segundos.</p>
+			</div>
+			<div class="p-8 rounded-2xl bg-[#0f172a] border border-white/10 hover:border-amber-500/50 transition-all group">
+				<i class="pi pi-wallet text-4xl text-amber-500 mb-4 group-hover:scale-110 transition-transform block"></i>
+				<h3 class="text-xl font-bold text-white mb-2">Tarifas Justas</h3>
+				<p class="text-slate-400">Precios transparentes calculados por distancia y tiempo, sin sorpresas.</p>
+			</div>
+		</div>
+	</section>
+
+	<amc-footer></amc-footer>
+</div>

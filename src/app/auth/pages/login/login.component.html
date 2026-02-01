@@ -1,0 +1,90 @@
+<div
+	class="w-full max-w-sm bg-white/80 backdrop-blur-lg border border-white/50 p-6 rounded-3xl shadow-2xl animate-fade-in"
+	style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px)"
+>
+	<div class="flex justify-center mb-4">
+		<img src="assets/img/taxi_logo.png" alt="Logo Taxi Service" class="h-28 object-contain drop-shadow-md" />
+	</div>
+
+	<h1 class="text-3xl font-extrabold text-center text-gray-900 mb-1 tracking-tight">Taxi Gestión</h1>
+	<p class="text-center text-gray-600 text-sm mb-6 font-medium">Plataforma de Transporte Seguro</p>
+
+	<form [formGroup]="loginForm" (ngSubmit)="login()" autocomplete="off">
+		<div class="mb-5">
+			<div
+				class="flex items-center bg-gray-50 rounded-xl px-4 py-3 shadow-inner border border-gray-200 focus-within:ring-2 focus-within:ring-amber-400 focus-within:border-amber-400 transition-all duration-300"
+			>
+				<i class="pi pi-user text-amber-500 text-lg mr-3"></i>
+				<input
+					pInputText
+					id="login-username"
+					formControlName="username"
+					placeholder="Usuario o Cédula"
+					class="flex-1 bg-transparent border-0 text-gray-800 placeholder-gray-400 focus:ring-0 outline-none w-full"
+					autocomplete="username"
+				/>
+			</div>
+		</div>
+
+		<div class="mb-6">
+			<div
+				class="flex items-center bg-gray-50 rounded-xl px-4 py-3 shadow-inner border border-gray-200 focus-within:ring-2 focus-within:ring-amber-400 focus-within:border-amber-400 transition-all duration-300"
+			>
+				<i class="pi pi-lock text-amber-500 text-lg mr-3"></i>
+				<p-password
+					inputId="login-password"
+					formControlName="password"
+					[toggleMask]="true"
+					[feedback]="false"
+					styleClass="w-full"
+					inputStyleClass="w-full bg-transparent border-0 p-0 text-gray-800 placeholder-gray-400 focus:shadow-none"
+					placeholder="Contraseña"
+					autocomplete="current-password"
+				></p-password>
+			</div>
+		</div>
+
+		<div class="flex justify-end text-gray-500 text-sm mb-6">
+			<a routerLink="/auth/forgot-password" class="hover:text-amber-600 hover:underline transition-colors">
+				¿Olvidaste tu contraseña?
+			</a>
+		</div>
+
+		<button
+			type="submit"
+			[disabled]="isLoading"
+			class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 text-gray-900 font-bold hover:from-amber-500 hover:to-yellow-600 shadow-lg shadow-amber-500/30 transform hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+		>
+			@if (!isLoading) {
+				<i class="pi pi-car text-xl"></i>
+				<span>Iniciar Viaje</span>
+			} @else {
+				<i class="pi pi-spinner pi-spin text-xl"></i>
+				<span>Verificando...</span>
+			}
+		</button>
+
+		<div class="my-6 flex items-center gap-2">
+			<div class="h-px bg-gray-300 flex-1"></div>
+			<span class="text-gray-400 text-xs uppercase">O regístrate como</span>
+			<div class="h-px bg-gray-300 flex-1"></div>
+		</div>
+
+		<div class="text-center grid grid-cols-2 gap-3">
+			<a
+				routerLink="/auth/register-client"
+				class="py-2 px-4 rounded-lg border border-gray-300 text-gray-600 text-sm hover:bg-gray-50 hover:border-amber-400 hover:text-amber-600 transition flex justify-center items-center gap-2"
+			>
+				<i class="pi pi-user"></i> Cliente
+			</a>
+			<a
+				routerLink="/auth/register-driver"
+				class="py-2 px-4 rounded-lg border border-gray-300 text-gray-600 text-sm hover:bg-gray-50 hover:border-amber-400 hover:text-amber-600 transition flex justify-center items-center gap-2"
+			>
+				<i class="pi pi-id-card"></i> Taxista
+			</a>
+		</div>
+
+		<p class="mt-6 text-[10px] text-gray-400 text-center">Proyecto Final Arquitectura de Software &copy; 2026</p>
+	</form>
+</div>

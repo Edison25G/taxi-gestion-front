@@ -1,0 +1,147 @@
+<section class="min-h-screen flex flex-col lg:flex-row relative bg-gray-50">
+	<div
+		*ngIf="menuOpen && isMobile"
+		class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity cursor-pointer"
+		(click)="menuOpen = false"
+		(keydown.escape)="menuOpen = false"
+		tabindex="0"
+		role="button"
+		aria-label="Cerrar menú"
+	></div>
+
+	<aside
+		class="w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-gray-200 flex flex-col z-50 overflow-y-auto transform transition-transform duration-300 shadow-xl fixed inset-y-0 h-screen lg:sticky lg:top-0 lg:h-screen"
+		[ngClass]="{ '-translate-x-full': !menuOpen && isMobile }"
+	>
+		<header class="flex items-center justify-between px-4 py-5 border-b border-gray-700 shrink-0">
+			<div class="flex items-center gap-2">
+				<i class="pi pi-car text-xl text-yellow-400"></i>
+				<span class="text-xl font-semibold text-white">Taxi Gestión</span>
+			</div>
+			<button class="lg:hidden text-gray-400 text-xl" (click)="menuOpen = false">
+				<i class="pi pi-times"></i>
+			</button>
+		</header>
+
+		<nav class="flex-1 overflow-y-auto p-2 custom-scrollbar">
+			<ul class="space-y-1">
+				<ng-container *ngFor="let item of menuItems">
+					<ng-container *ngIf="hasAccess(item.roles)">
+						<li *ngIf="item.header" class="mt-6 mb-2 px-4 text-xs font-bold text-gray-500 uppercase tracking-widest">
+							{{ item.header }}
+						</li>
+
+						<li>
+							<a
+								[routerLink]="item.link"
+								routerLinkActive="bg-amber-600 text-white font-semibold shadow-md"
+								(click)="onMenuClick()"
+								class="group flex items-center gap-3 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-gray-700 text-gray-300 hover:text-white"
+							>
+								<i
+									[class]="item.icon + ' text-lg transition-colors duration-200 group-hover:text-amber-400'"
+									[ngClass]="{ 'text-white': false }"
+								></i>
+								<span>{{ item.label }}</span>
+							</a>
+						</li>
+					</ng-container>
+				</ng-container>
+			</ul>
+		</nav>
+
+		<div class="p-4 border-t border-gray-700 text-xs text-center text-gray-500">v1.0.0</div>
+	</aside>
+
+	<section class="flex-1 flex flex-col min-h-screen">
+		<header
+			class="bg-white/80 backdrop-blur-lg text-black px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center shadow-sm sticky top-0 z-30 border-b border-gray-200 gap-2"
+		>
+			<div class="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
+				<button
+					class="lg:hidden bg-gray-200 p-2 rounded-md hover:bg-gray-300 transition shrink-0"
+					(click)="menuOpen = !menuOpen"
+				>
+					<i class="pi pi-bars text-gray-800 text-lg"></i>
+				</button>
+
+				<h2 class="text-sm sm:text-lg md:text-xl font-bold text-gray-800 truncate">Taxi Gestión</h2>
+			</div>
+
+			<div class="flex items-center gap-2 relative shrink-0">
+				<button
+					type="button"
+					(click)="op.toggle($event)"
+					class="focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-full"
+				>
+					<p-avatar
+						[label]="currentUser.charAt(0).toUpperCase()"
+						styleClass="bg-amber-500 text-white shadow-lg"
+						size="large"
+						shape="circle"
+					>
+					</p-avatar>
+				</button>
+
+				<p-popover #op styleClass="rounded-2xl shadow-xl overflow-hidden">
+					<div class="w-72 font-sans">
+						<div class="relative">
+							<button
+								(click)="op.hide()"
+								class="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+								title="Cerrar"
+							>
+								<i class="pi pi-times text-xs"></i>
+							</button>
+						</div>
+
+						<div class="flex flex-col items-center pt-6 pb-5 px-4">
+							<div class="relative mb-3">
+								<div
+									class="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 text-3xl font-bold shadow-sm border-2 border-white ring-2 ring-amber-50"
+								>
+									{{ currentUser.charAt(0).toUpperCase() }}
+								</div>
+								<div
+									class="absolute bottom-0 right-0 bg-gray-800 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-white shadow-sm uppercase tracking-wide"
+								>
+									{{ currentRole | slice: 0 : 10 }}
+								</div>
+							</div>
+
+							<h3 class="text-lg font-semibold text-gray-800 text-center leading-tight">
+								¡Hola, {{ currentUser.split(' ')[0] }}!
+							</h3>
+							<p class="text-sm text-gray-500 mb-4 text-center">
+								{{ currentUser }}
+							</p>
+
+							<button
+								class="px-5 py-2 rounded-full border border-gray-300 text-sm font-medium text-amber-700 hover:bg-amber-50 hover:border-amber-200 transition-all duration-200 flex items-center gap-2"
+							>
+								<i class="pi pi-user text-xs"></i>
+								Gestionar mi perfil
+							</button>
+						</div>
+
+						<div class="border-t border-gray-100 bg-gray-50/50 p-2 flex justify-center">
+							<button
+								(click)="logout()"
+								class="flex items-center gap-2 px-6 py-3 text-sm text-gray-600 hover:text-red-600 hover:bg-white rounded-lg transition-all duration-200 w-full justify-center group"
+							>
+								<i class="pi pi-sign-out group-hover:text-red-500 transition-colors"></i>
+								<span>Cerrar sesión</span>
+							</button>
+						</div>
+					</div>
+				</p-popover>
+			</div>
+		</header>
+
+		<main class="flex-1 p-4 md:p-6 overflow-y-auto bg-gray-50 scroll-smooth">
+			<router-outlet></router-outlet>
+		</main>
+
+		<amc-footer></amc-footer>
+	</section>
+</section>

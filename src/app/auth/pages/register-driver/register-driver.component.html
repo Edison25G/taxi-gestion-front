@@ -1,0 +1,91 @@
+<div class="min-h-screen flex items-center justify-center p-4">
+	<div
+		class="w-full max-w-lg bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-8 border-l-4 border-amber-400 animate-slide-in-right"
+	>
+		<div class="text-center mb-6">
+			<h2 class="text-2xl font-bold text-gray-800 flex items-center justify-center gap-2">
+				<i class="pi pi-car text-amber-500"></i> Registro de Taxista
+			</h2>
+			<p class="text-gray-500 text-sm">Únete a nuestra flota de conductores</p>
+		</div>
+
+		<form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+			<!-- Datos Personales -->
+			<h3 class="text-xs font-bold text-amber-600 uppercase tracking-wide border-b pb-1">Datos Personales</h3>
+			<div class="grid grid-cols-2 gap-3">
+				<div class="flex flex-col gap-1">
+					<label class="text-xs font-semibold text-gray-600">Nombres</label>
+					<input pInputText formControlName="nombres" class="w-full text-sm" />
+				</div>
+				<div class="flex flex-col gap-1">
+					<label class="text-xs font-semibold text-gray-600">Apellidos</label>
+					<input pInputText formControlName="apellidos" class="w-full text-sm" />
+				</div>
+			</div>
+
+			<div class="grid grid-cols-2 gap-3">
+				<div class="flex flex-col gap-1">
+					<label class="text-xs font-semibold text-gray-600">Cédula</label>
+					<input pInputText formControlName="identificacion" class="w-full text-sm" />
+				</div>
+				<div class="flex flex-col gap-1">
+					<label class="text-xs font-semibold text-gray-600">Email</label>
+					<input pInputText formControlName="email" type="email" class="w-full text-sm" />
+				</div>
+			</div>
+
+			<!-- Datos del Vehículo -->
+			<h3 class="text-xs font-bold text-amber-600 uppercase tracking-wide border-b pb-1 mt-2">Datos del Vehículo</h3>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+				<div class="flex flex-col gap-1">
+					<label class="text-xs font-semibold text-gray-600">Licencia</label>
+					<input pInputText formControlName="licencia" placeholder="Tipo" class="w-full text-sm" />
+				</div>
+				<div class="flex flex-col gap-1">
+					<label class="text-xs font-semibold text-gray-600">Placa</label>
+					<input pInputText formControlName="placa" placeholder="ABC-1234" class="w-full text-sm uppercase" />
+				</div>
+				<div class="flex flex-col gap-1">
+					<label class="text-xs font-semibold text-gray-600">Modelo Auto</label>
+					<input pInputText formControlName="modeloAuto" placeholder="Ej: Aveo" class="w-full text-sm" />
+				</div>
+			</div>
+
+			<div class="flex flex-col gap-1 mt-2">
+				<label class="text-xs font-semibold text-gray-600">Contraseña</label>
+				<div class="grid grid-cols-2 gap-3">
+					<p-password
+						formControlName="password"
+						[toggleMask]="true"
+						styleClass="w-full"
+						inputStyleClass="w-full text-sm"
+						placeholder="Contraseña"
+					></p-password>
+					<p-password
+						formControlName="confirmPassword"
+						[toggleMask]="true"
+						[feedback]="false"
+						styleClass="w-full"
+						inputStyleClass="w-full text-sm"
+						placeholder="Confirmar"
+					></p-password>
+				</div>
+			</div>
+
+			<p-divider></p-divider>
+
+			<button
+				pButton
+				type="submit"
+				[loading]="isLoading"
+				label="Solicitar Registro"
+				class="w-full p-button-warning font-bold cursor-pointer"
+			></button>
+
+			<div class="text-center mt-2">
+				<a routerLink="/auth/login" class="text-xs text-gray-600 hover:text-amber-600 cursor-pointer">Cancelar</a>
+			</div>
+		</form>
+	</div>
+	<p-toast></p-toast>
+</div>

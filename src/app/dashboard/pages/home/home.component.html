@@ -1,0 +1,160 @@
+<div *ngIf="userRole === Role.ADMIN; else personalView" class="animate-fade-in">
+	<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
+		<div>
+			<h2 class="text-2xl font-bold text-gray-800 tracking-tight">Panel de Control - Taxi Gestión</h2>
+			<p class="text-sm text-gray-500">Resumen de actividad de la flota</p>
+		</div>
+
+		<p-button
+			type="button"
+			(click)="loadDashboardData()"
+			class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-amber-600 rounded-md hover:bg-amber-50 transition-colors"
+		>
+			<i class="pi pi-refresh" [ngClass]="{ 'animate-spin': isLoading }"></i>
+			<span>Actualizar</span>
+		</p-button>
+	</div>
+
+	<ng-container *ngIf="isLoading">
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+			<div class="w-full h-32 bg-gray-200 rounded-xl shadow-sm animate-pulse"></div>
+			<div class="w-full h-32 bg-gray-200 rounded-xl shadow-sm animate-pulse"></div>
+			<div class="w-full h-32 bg-gray-200 rounded-xl shadow-sm animate-pulse"></div>
+			<div class="w-full h-32 bg-gray-200 rounded-xl shadow-sm animate-pulse"></div>
+		</div>
+		<div class="w-full h-96 bg-gray-200 rounded-xl shadow-sm animate-pulse"></div>
+	</ng-container>
+
+	<ng-container *ngIf="!isLoading">
+		<div *ngIf="!isEmpty && reporteData; else emptyState">
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+				<div
+					class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 group"
+				>
+					<div class="flex justify-between items-start">
+						<div>
+							<span class="text-slate-500 text-sm font-medium mb-1 block">Viajes Realizados</span>
+							<span class="text-3xl font-bold text-slate-800">{{ reporteData.viajesRealizados }}</span>
+						</div>
+						<div
+							class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300"
+						>
+							<i class="pi pi-car text-xl"></i>
+						</div>
+					</div>
+				</div>
+
+				<div
+					class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 group"
+				>
+					<div class="flex justify-between items-start">
+						<div>
+							<span class="text-slate-500 text-sm font-medium mb-1 block">Conductores Activos</span>
+							<span class="text-3xl font-bold text-amber-600">{{ reporteData.conductoresActivos }}</span>
+						</div>
+						<div
+							class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors duration-300"
+						>
+							<i class="pi pi-users text-xl"></i>
+						</div>
+					</div>
+				</div>
+
+				<div
+					class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 group"
+				>
+					<div class="flex justify-between items-start">
+						<div>
+							<span class="text-slate-500 text-sm font-medium mb-1 block">Ganancias del Día</span>
+							<span class="text-3xl font-bold text-green-600">{{ reporteData.gananciasDia | currency: 'USD' }}</span>
+						</div>
+						<div
+							class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition-colors duration-300"
+						>
+							<i class="pi pi-dollar text-xl"></i>
+						</div>
+					</div>
+				</div>
+
+				<div
+					class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 group"
+				>
+					<div class="flex justify-between items-start">
+						<div>
+							<span class="text-slate-500 text-sm font-medium mb-1 block">Calificación Promedio</span>
+							<span class="text-3xl font-bold text-orange-600">{{ reporteData.calificacion }}/5</span>
+						</div>
+						<div
+							class="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors duration-300"
+						>
+							<i class="pi pi-star text-xl"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+				<div class="flex justify-between items-center mb-4">
+					<h3 class="text-lg font-bold text-slate-800">Solicitudes de Viajes (Últimos 6 meses)</h3>
+				</div>
+				<div class="relative w-full h-[24rem]">
+					<p-chart type="bar" [data]="barChartData" [options]="barChartOptions" height="100%"></p-chart>
+				</div>
+			</div>
+		</div>
+
+		<ng-template #emptyState>
+			<div
+				class="flex flex-col items-center justify-center py-20 px-4 bg-white rounded-xl border-2 border-dashed border-slate-200 text-center animate-fade-in-up"
+			>
+				<div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+					<i class="pi pi-chart-bar text-4xl text-slate-300"></i>
+				</div>
+				<h3 class="text-2xl font-bold text-slate-800 mb-2">Sin datos para mostrar</h3>
+				<p class="text-slate-500 max-w-md mb-8 text-lg">El sistema está listo, pero aún no hay registros.</p>
+
+				<div class="flex flex-wrap gap-4 justify-center">
+					<a
+						routerLink="/dashboard/viajes/solicitar"
+						class="inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-amber-600 rounded-lg shadow-md hover:bg-amber-700 transition-colors no-underline"
+					>
+						<i class="pi pi-car"></i>
+						<span>Solicitar Viaje</span>
+					</a>
+				</div>
+			</div>
+		</ng-template>
+	</ng-container>
+</div>
+
+<ng-template #personalView>
+	<div
+		class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-500 to-orange-600 p-8 md:p-12 mb-8 text-white shadow-xl animate-fade-in"
+	>
+		<div class="relative z-10">
+			<h1 class="text-3xl md:text-5xl font-bold mb-2">¡Hola, {{ authService.usuario()?.nombres }}!</h1>
+			<p class="text-lg opacity-90 mb-8">Bienvenido a Taxi Gestión</p>
+
+			<div class="flex flex-wrap gap-4">
+				<button
+					*ngIf="userRole === Role.CLIENTE || userRole === Role.ADMIN"
+					routerLink="/dashboard/pedir-taxi"
+					class="bg-white text-orange-600 hover:bg-orange-50 font-bold py-3 px-6 rounded-full shadow-lg transition-transform hover:scale-105 flex items-center gap-2"
+				>
+					<i class="pi pi-car text-xl"></i>
+					<span>Pedir Taxi</span>
+				</button>
+
+				<button
+					routerLink="/dashboard/viajes"
+					class="bg-orange-700/50 hover:bg-orange-700/70 text-white font-bold py-3 px-6 rounded-full border border-white/20 backdrop-blur-sm transition-all flex items-center gap-2"
+				>
+					<i class="pi pi-history text-xl"></i>
+					<span>Mis Viajes</span>
+				</button>
+			</div>
+		</div>
+
+		<i class="pi pi-map absolute -right-10 -bottom-10 text-[15rem] opacity-10 rotate-12 pointer-events-none"></i>
+	</div>
+</ng-template>

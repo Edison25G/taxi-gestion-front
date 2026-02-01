@@ -1,0 +1,57 @@
+<div class="p-6 font-sans">
+	<div class="flex justify-between items-center mb-6">
+		<div>
+			<h2 class="text-2xl font-black text-slate-900 m-0">Historial de Viajes</h2>
+			<p class="text-slate-500 text-sm m-0">Registro de tus actividades recientes</p>
+		</div>
+		<div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+			<i class="pi pi-history text-amber-600 text-xl"></i>
+		</div>
+	</div>
+
+	<div class="card shadow-xl border border-slate-100 rounded-2xl overflow-hidden bg-white">
+		<p-table
+			[value]="viajes"
+			[rows]="10"
+			[paginator]="true"
+			styleClass="p-datatable-sm"
+			[tableStyle]="{ 'min-width': '50rem' }"
+		>
+			<ng-template pTemplate="header">
+				<tr class="bg-slate-50 text-slate-600 uppercase text-xs tracking-wider">
+					<th class="p-4">ID</th>
+					<th class="p-4">Origen</th>
+					<th class="p-4">Destino</th>
+					<th class="p-4">Conductor</th>
+					<th class="p-4">Tarifa</th>
+					<th class="p-4">Estado</th>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="body" let-viaje>
+				<tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+					<td class="p-4 font-mono text-slate-500 text-xs">#{{ viaje.id }}</td>
+					<td class="p-4 font-bold text-slate-700">{{ viaje.origen }}</td>
+					<td class="p-4 font-bold text-slate-700">{{ viaje.destino }}</td>
+					<td class="p-4">
+						<div class="flex items-center gap-2">
+							<i class="pi pi-user text-slate-400"></i>
+							<span class="text-slate-600">{{ viaje.conductor || 'Sin Asignar' }}</span>
+						</div>
+					</td>
+					<td class="p-4 font-bold text-slate-900">{{ viaje.tarifa | currency }}</td>
+					<td class="p-4">
+						<p-tag [value]="viaje.estado" [severity]="getSeverity(viaje.estado)" [rounded]="true"></p-tag>
+					</td>
+				</tr>
+			</ng-template>
+			<ng-template pTemplate="emptymessage">
+				<tr>
+					<td colspan="6" class="text-center p-8 text-slate-400">
+						<i class="pi pi-inbox text-4xl mb-2 block"></i>
+						No hay viajes registrados.
+					</td>
+				</tr>
+			</ng-template>
+		</p-table>
+	</div>
+</div>
