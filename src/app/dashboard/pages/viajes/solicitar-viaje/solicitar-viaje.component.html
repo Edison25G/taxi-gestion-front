@@ -158,7 +158,9 @@
 							class="w-full h-full object-cover"
 						/>
 					</div>
-					<h2 class="text-2xl font-bold text-gray-900">{{ driverFound.first_name }} {{ driverFound.last_name }}</h2>
+					<h2 class="text-2xl font-bold text-gray-900">
+						{{ driverFound.nombres || driverFound.first_name }} {{ driverFound.apellidos || driverFound.last_name }}
+					</h2>
 					<div class="flex items-center gap-1 text-amber-500 mb-1">
 						<i class="pi pi-star-fill"></i>
 						<span class="font-bold text-gray-700">{{ driverFound.calificacion }}</span>

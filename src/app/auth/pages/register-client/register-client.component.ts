@@ -11,6 +11,8 @@ import { DividerModule } from 'primeng/divider';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 
+import { AuthService } from '../../../core/services/auth.service';
+
 @Component({
 	selector: 'app-register-client',
 	standalone: true,
@@ -34,6 +36,7 @@ export default class RegisterClientComponent {
 	private fb = inject(FormBuilder);
 	private router = inject(Router);
 	private messageService = inject(MessageService);
+	private authService = inject(AuthService);
 
 	constructor() {
 		this.registerForm = this.fb.group(
@@ -60,16 +63,44 @@ export default class RegisterClientComponent {
 		}
 
 		this.isLoading = true;
+		const { nombres, apellidos, email, password } = this.registerForm.value;
+		const nombreCompleto = `${nombres} ${apellidos}`;
 
-		// Simulación de registro
-		setTimeout(() => {
-			this.isLoading = false;
-			this.messageService.add({
-				severity: 'success',
-				summary: 'Registro Exitoso',
-				detail: 'Bienvenido a Taxi Gestión',
+		this.authService
+			.registro({
+				nombre: nombreCompleto,
+				email,
+				password,
+			})
+			.subscribe({
+				next: () => {
+					this.isLoading = false;
+					this.messageService.add({
+						severity: 'success',
+						summary: 'Cuenta Creada',
+						detail: 'Registro exitoso. Por favor inicia sesión.',
+						life: 3000,
+					});
+					setTimeout(() => this.router.navigate(['/auth/login']), 2000);
+				},
+				error: (err) => {
+					this.isLoading = false;
+					console.error('Error registro:', err);
+
+					let errorMsg = 'No se pudo crear la cuenta.';
+					if (err.error && err.error.message) {
+						errorMsg = err.error.message;
+					} else if (err.status === 400) {
+						errorMsg = 'Datos inválidos o el correo ya existe.';
+					}
+
+					this.messageService.add({
+						severity: 'error',
+						summary: 'Error',
+						detail: errorMsg,
+						life: 5000,
+					});
+				},
 			});
-			setTimeout(() => this.router.navigate(['/auth/login']), 1500);
-		}, 1500);
 	}
 }

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, throwError, map, catchError, tap, of, delay } from 'rxjs';
-import { environment } from './../../environments/environment.development';
+import { environment } from './../../environments/environment';
 import { ErrorService } from '../../auth/core/services/error.service';
 import { LoginRequest, UserData } from '../../core/interfaces/auth.interface';
 import { UserRepository } from '../domain/repositories/user.repository';
@@ -78,47 +78,47 @@ export class AuthService implements UserRepository {
 
 	// --- LOGIN ---
 	login(credentials: LoginRequest): Observable<UserData> {
-		// --- MOCK LOGIN PARA DESARROLLO/DEFENSA ---
-		console.warn('⚠️ USANDO MOCK LOGIN - NO CONECTADO AL BACKEND');
+		return this.http.post<any>(`${environment.apiUrl}/auth/login/`, credentials).pipe(
+			map((response) => {
+				// El backend devuelve: { refresh, access, user_id, email, nombre, rol }
+				const user: UserData = {
+					id: response.user_id || 0, // El backend podría mandar UUID, ajustamos si es necesario
+					email: response.email,
+					nombres: response.nombre,
+					rol: response.rol,
+					esta_activo: true, // Asumimos true al loguear
+				} as UserData;
 
-		const username = credentials.username.toLowerCase();
-		let role = RolUsuario.CLIENTE;
-		let nombre = 'Usuario Visitante';
-
-		// 1. LÓGICA DE ROLES
-		if (username.includes('admin')) {
-			role = RolUsuario.ADMIN;
-			nombre = 'Administrador Sistema';
-		} else if (username.includes('conductor') || username.includes('chofer')) {
-			role = RolUsuario.CONDUCTOR;
-			nombre = 'Juan Pérez (Chofer)';
-		} else {
-			role = RolUsuario.CLIENTE;
-			nombre = 'Maria López (Cliente)';
-		}
-
-		const mockUser: UserData = {
-			id: 1,
-			username: credentials.username,
-			first_name: nombre, // Mantener para compatibilidad
-			last_name: '',
-			nombres: nombre,
-			apellidos: '',
-			email: `${username}@taxi.com`,
-			rol: role,
-			esta_activo: true,
-		};
-
-		return of(mockUser).pipe(
-			delay(800), // Simular delay de red
-			map((user) => {
-				// Guardamos token ficticio y usuario
-				localStorage.setItem('token', 'mock-jwt-token-defense-mode');
+				// Guardamos en localStorage
+				localStorage.setItem('token', response.access);
+				localStorage.setItem('refresh_token', response.refresh);
 				localStorage.setItem('user', JSON.stringify(user));
+
+				// Actualizamos señal
 				this.usuario.set(user);
+
 				return user;
 			}),
 			tap(() => this.errorService.loginSuccess()),
+			catchError((error) => {
+				console.error('Login error', error);
+				// Dejamos que el componente maneje el error o lanzamos uno genérico
+				return throwError(() => new Error('Credenciales inválidas o error de servidor'));
+			}),
 		);
+	}
+
+	// --- REGISTRO ---
+	registro(datos: { nombre: string; email: string; password: string }) {
+		// Agregamos el rol automáticamente para que siempre sea CLIENTE
+		const payload = { ...datos, rol: 'CLIENTE' };
+
+		return this.http.post(`${environment.apiUrl}/auth/registro/`, payload);
+	}
+
+	// --- REGISTRO CONDUCTOR ---
+	registroConductor(datos: { nombre: string; email: string; password: string }) {
+		const payload = { ...datos, rol: 'CONDUCTOR' };
+		return this.http.post(`${environment.apiUrl}/auth/registro/`, payload);
 	}
 }

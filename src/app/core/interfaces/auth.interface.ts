@@ -20,7 +20,7 @@
 // src/app/core/interfaces/auth.interface.ts
 
 export interface LoginRequest {
-	username: string;
+	email: string;
 	password: string;
 }
 
@@ -39,8 +39,12 @@ export interface UserData {
 // ⬅️ ¡AÑADE ESTA INTERFAZ!
 // Esta es la respuesta que nos da el endpoint /api/v1/token/
 export interface TokenResponse {
-	access: string;
 	refresh: string;
+	access: string;
+	user_id?: string;
+	email?: string;
+	nombre?: string;
+	rol?: string;
 }
 
 // (Puedes borrar 'export interface LoginResponse' si todavía existe aquí)

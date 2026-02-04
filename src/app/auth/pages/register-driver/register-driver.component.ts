@@ -11,6 +11,8 @@ import { DividerModule } from 'primeng/divider';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 
+import { AuthService } from '../../../core/services/auth.service';
+
 @Component({
 	selector: 'app-register-driver',
 	standalone: true,
@@ -34,6 +36,7 @@ export default class RegisterDriverComponent {
 	private fb = inject(FormBuilder);
 	private router = inject(Router);
 	private messageService = inject(MessageService);
+	private authService = inject(AuthService);
 
 	constructor() {
 		this.registerForm = this.fb.group(
@@ -67,15 +70,49 @@ export default class RegisterDriverComponent {
 
 		this.isLoading = true;
 
-		// Simulación de registro
-		setTimeout(() => {
-			this.isLoading = false;
-			this.messageService.add({
-				severity: 'info',
-				summary: 'Solicitud Enviada',
-				detail: 'Un administrador revisará tu registro de conductor.',
+		// Extraemos los datos del formulario
+		const { nombres, apellidos, email, password } = this.registerForm.value;
+		// IMPORTANTE: Unimos nombres y apellidos porque el backend espera un solo campo "nombre"
+		const nombreCompleto = `${nombres} ${apellidos}`;
+
+		this.authService
+			.registroConductor({
+				nombre: nombreCompleto,
+				email,
+				password,
+				// NOTA: Licencia, placa y modelo se podrían guardar en otro endpoint
+				// o el backend podría actualizarse para recibirlos.
+				// Por ahora registramos la cuenta base.
+			})
+			.subscribe({
+				next: () => {
+					this.isLoading = false;
+					this.messageService.add({
+						severity: 'success', // Cambiado a success
+						summary: 'Cuenta Creada',
+						detail: 'Conductor registrado correctamente. Por favor inicia sesión.',
+						life: 3000,
+					});
+					setTimeout(() => this.router.navigate(['/auth/login']), 2000);
+				},
+				error: (err) => {
+					this.isLoading = false;
+					console.error('Error registro conductor:', err);
+
+					let errorMsg = 'No se pudo registrar el conductor.';
+					if (err.error && err.error.message) {
+						errorMsg = err.error.message;
+					} else if (err.status === 400) {
+						errorMsg = 'Datos inválidos o el correo ya existe.';
+					}
+
+					this.messageService.add({
+						severity: 'error',
+						summary: 'Error',
+						detail: errorMsg,
+						life: 5000,
+					});
+				},
 			});
-			setTimeout(() => this.router.navigate(['/auth/login']), 2000);
-		}, 1500);
 	}
 }

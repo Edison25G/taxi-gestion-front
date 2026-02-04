@@ -90,25 +90,95 @@ export default class SolicitarViajeComponent {
 
 		const { origen, destino } = this.requestForm.value;
 
-		this.viajesService.solicitarTaxi(origen, destino, currentUser.id).subscribe({
-			next: (response) => {
-				this.currentTrip = response.viaje;
-				this.driverFound = response.conductor;
-				this.isSearching = false;
+		// Función auxiliar para enviar solicitud
+		const enviarSolicitud = (lat: number, lon: number) => {
+			this.viajesService
+				.solicitarTaxi({
+					cliente_id: currentUser.id,
+					lat_origen: lat,
+					lon_origen: lon,
+					lat_destino: -2.9001, // Mock Destino (Idealmente geocodificado también)
+					lon_destino: -79.01, // Mock Destino
+					origen: origen, // ✅ Enviamos texto del input
+					destino: destino, // ✅ Enviamos texto del input
+				})
+				.subscribe({
+					next: (response) => {
+						this.isSearching = false;
 
-				// Efecto de sonido o vibración podría ir aquí
-				this.messageService.add({
-					severity: 'success',
-					summary: '¡Conductor Encontrado!',
-					detail: 'Tu taxi está en camino.',
+						// Mapeo flexible de la respuesta
+						this.currentTrip = response.viaje || {
+							origen: this.requestForm.value.origen,
+							destino: this.requestForm.value.destino,
+							tarifa: response.tarifa_estimada || 0,
+							estado: 'SOLICITADO',
+						};
+
+						// Si el backend devuelve un objeto conductor, genial.
+						// Si devuelve "conductor_nombre", creamos un objeto parcial para que el HTML no falle.
+						if (response.conductor) {
+							this.driverFound = response.conductor;
+						} else if (response.conductor_nombre) {
+							// Mapeo manual si el backend devuelve estructura plana
+							this.driverFound = {
+								id: 0,
+								username: 'mock_driver', // Requerido por la interfaz
+								email: '',
+								// password: '', // Eliminado porque no existe en la interfaz Conductor/UserData
+								rol: 'CONDUCTOR',
+								nombres: response.conductor_nombre, // Usamos nombres para el template
+								apellidos: '',
+								calificacion: 5.0, // Default visual
+								modeloAuto: 'Taxi', // Default visual
+								placa: '---', // Default visual
+							};
+						} else {
+							this.driverFound = null;
+						}
+
+						if (this.driverFound) {
+							const nombreConductor =
+								this.driverFound.nombres || this.driverFound.first_name || response.conductor_nombre;
+							this.messageService.add({
+								severity: 'success',
+								summary: '¡Conductor Asignado!',
+								detail: `Tu conductor ${nombreConductor} está en camino.`,
+							});
+						} else {
+							this.messageService.add({
+								severity: 'info',
+								summary: 'Solicitud Recibida',
+								detail: 'No hay conductores disponibles por ahora. Tu solicitud está en espera.',
+							});
+						}
+					},
+					error: (err) => {
+						this.isSearching = false;
+						console.error(err);
+						this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo solicitar el viaje.' });
+					},
 				});
-			},
-			error: (err) => {
-				this.isSearching = false;
-				console.error(err);
-				this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo asignar conductor.' });
-			},
-		});
+		};
+
+		// Obtener GPS Real
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(
+				(position) => {
+					enviarSolicitud(position.coords.latitude, position.coords.longitude);
+				},
+				(error) => {
+					console.warn('GPS Cliente falló', error);
+					this.messageService.add({
+						severity: 'warn',
+						summary: 'Ubicación Aproximada',
+						detail: 'No se obtuvo GPS. Usando ubicación por defecto.',
+					});
+					enviarSolicitud(-2.8974, -79.0045); // Fallback Cuenca
+				},
+			);
+		} else {
+			enviarSolicitud(-2.8974, -79.0045); // Fallback
+		}
 	}
 
 	nuevoViaje() {

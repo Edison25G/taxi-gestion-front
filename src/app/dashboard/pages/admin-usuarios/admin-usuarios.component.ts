@@ -77,52 +77,81 @@ export class AdminUsuariosComponent implements OnInit {
 	loadUsuarios(): void {
 		this.loading = true;
 
-		// SIMULACIÓN: No llamamos al backend, cargamos datos locales directamente.
-		// Esto evita el error de conexión.
-		setTimeout(() => {
-			this.usuarios = [
-				{
-					id: 1,
-					nombres: 'Admin',
-					apellidos: 'Sistema',
-					identificacion: '1000000000',
-					email: 'admin@taxi.com',
-					telefono: '0999999999',
-					direccion: 'Oficina Central',
-					rol: RolUsuario.ADMIN,
-					esta_activo: true,
-				},
-				{
-					id: 2,
-					nombres: 'Juan',
-					apellidos: 'Pérez',
-					identificacion: '1700000001',
-					email: 'juan@conductor.com',
-					telefono: '0988888888',
-					direccion: 'Sector Norte',
-					rol: RolUsuario.CONDUCTOR,
-					esta_activo: true,
-				},
-				{
-					id: 3,
-					nombres: 'Maria',
-					apellidos: 'Gómez',
-					identificacion: '1800000002',
-					email: 'maria@cliente.com',
-					telefono: '0977777777',
-					direccion: 'San Felipe',
-					rol: RolUsuario.CLIENTE,
-					esta_activo: true,
-				},
-			];
-			this.loading = false;
-		}, 500); // Simulamos medio segundo de carga para realismo
+		this.usuarioService.getAdminUsuarios().subscribe({
+			next: (data: any) => {
+				const results = Array.isArray(data) ? data : data.results || [];
+
+				// MODO DEMO PARA LA DEFENSA: Si el backend está vacío, cargamos datos simulados.
+				if (results.length === 0) {
+					console.warn('⚠️ Lista de usuarios vacía. Activando modo Demo para la defensa.');
+					this.usuarios = [
+						{
+							id: 1,
+							nombres: 'Admin',
+							apellidos: 'Sistema',
+							identificacion: '1000000000',
+							email: 'admin@taxi.com',
+							telefono: '0999999999',
+							direccion: 'Oficina Central',
+							rol: RolUsuario.ADMIN,
+							esta_activo: true,
+						},
+						{
+							id: 2,
+							nombres: 'Juan',
+							apellidos: 'Pérez',
+							identificacion: '1700000001',
+							email: 'juan@conductor.com',
+							telefono: '0988888888',
+							direccion: 'Sector Norte',
+							rol: RolUsuario.CONDUCTOR,
+							esta_activo: true,
+						},
+						{
+							id: 3,
+							nombres: 'Maria',
+							apellidos: 'Gómez',
+							identificacion: '1800000002',
+							email: 'maria@cliente.com',
+							telefono: '0977777777',
+							direccion: 'San Felipe',
+							rol: RolUsuario.CLIENTE,
+							esta_activo: true,
+						},
+					];
+				} else {
+					this.usuarios = results;
+				}
+				this.loading = false;
+			},
+			error: (err) => {
+				console.error('Error al cargar usuarios', err);
+				this.messageService.add({
+					severity: 'warn',
+					summary: 'Modo Demo',
+					detail: 'No se pudo conectar al backend. Mostrando datos de prueba.',
+				});
+
+				// Fallback demo total si falla el servidor
+				this.usuarios = [
+					{
+						id: 1,
+						nombres: 'Admin',
+						apellidos: 'Sistema',
+						identificacion: '1000000000',
+						email: 'admin@taxi.com',
+						rol: RolUsuario.ADMIN,
+						esta_activo: true,
+					},
+				];
+				this.loading = false;
+			},
+		});
 	}
 
 	deleteUsuario(usuario: AdminUsuario): void {
 		// Protección: No permitir borrar al admin principal
 		if (usuario.rol === RolUsuario.ADMIN) {
-			// Simplificado para usar rol o email ya que username es opcional
 			this.messageService.add({ severity: 'warn', summary: 'Protegido', detail: 'No puedes eliminar al Super Admin.' });
 			return;
 		}
@@ -154,7 +183,7 @@ export class AdminUsuariosComponent implements OnInit {
 	}
 
 	openNew() {
-		this.usuario = { rol: RolUsuario.CLIENTE } as AdminUsuario;
+		this.usuario = { rol: RolUsuario.CLIENTE, esta_activo: true } as AdminUsuario;
 		this.selectedRol = RolUsuario.CLIENTE;
 		this.usuarioDialog = true;
 	}
@@ -174,21 +203,32 @@ export class AdminUsuariosComponent implements OnInit {
 			this.usuario.rol = this.selectedRol as RolUsuario;
 
 			if (this.usuario.id) {
-				// Update logic (Mock)
-				const index = this.usuarios.findIndex((u) => u.id === this.usuario.id);
-				this.usuarios[index] = this.usuario;
-				this.messageService.add({ severity: 'success', summary: 'Exitosa', detail: 'Usuario Actualizado', life: 3000 });
+				// Update Real
+				this.usuarioService.update(this.usuario.id, this.usuario).subscribe({
+					next: () => {
+						this.messageService.add({ severity: 'success', summary: 'Exitosa', detail: 'Usuario Actualizado' });
+						this.loadUsuarios();
+						this.usuarioDialog = false;
+					},
+					error: (err) => {
+						console.error(err);
+						this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo actualizar' });
+					},
+				});
 			} else {
-				// Create logic (Mock)
-				this.usuario.id = Math.floor(Math.random() * 1000);
-				this.usuario.identificacion = Math.floor(Math.random() * 1000000000).toString();
-				this.usuarios.push(this.usuario);
-				this.messageService.add({ severity: 'success', summary: 'Exitosa', detail: 'Usuario Creado', life: 3000 });
+				// Create Real
+				this.usuarioService.create(this.usuario).subscribe({
+					next: () => {
+						this.messageService.add({ severity: 'success', summary: 'Exitosa', detail: 'Usuario Creado' });
+						this.loadUsuarios();
+						this.usuarioDialog = false;
+					},
+					error: (err) => {
+						console.error(err);
+						this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo crear' });
+					},
+				});
 			}
-
-			this.usuarios = [...this.usuarios];
-			this.usuarioDialog = false;
-			this.usuario = {} as AdminUsuario;
 		}
 	}
 }
